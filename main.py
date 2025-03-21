@@ -63,8 +63,7 @@ def to_double(state0: int):
 # [.....................] [.....................] [.....................]
 #            ^             !
 
-
-if __name__ == "__main__":
+def solve(sequence):
     sequence = sequence[:64]
     state0, state1 = getStates(sequence[0:5])
 
@@ -96,3 +95,29 @@ if __name__ == "__main__":
     for _ in range(num):
         state0, state1 = xorshift64(state0, state1)
         print(to_double(state0))
+
+    cache = []
+    cacheIndex = 64 - num + 5 - 1
+    # prefill cache
+    for _ in range(64):
+        state0, state1 = xorshift64(state0, state1)
+        cache.append(to_double(state0))
+
+    while True:
+        if cacheIndex < 0:
+            print("Cache refil!")
+            # refill cache
+            cache = []
+            for _ in range(64):
+                state0, state1 = xorshift64(state0, state1)
+                cache.append(to_double(state0))
+
+            cacheIndex = 63
+        yield cache[cacheIndex]
+        cacheIndex -= 1
+
+
+if __name__ == "__main__":
+    generator = solve(sequence)
+    for i in range(128):
+        print(i+1, next(generator))
