@@ -102,7 +102,7 @@ def solve(sequence):
 
     # prefill cache 
     cache = []
-    cacheIndex = 64 - num + 5 - 1
+    cacheIndex = 64 - num + 5 - 1 - len(sequence) + 64
     refillCache()
 
     while True:
