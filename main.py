@@ -38,7 +38,7 @@ def getStates(sequence) -> tuple[int, int]:
 
 
 # Python rewrite of https://github.com/v8/v8/blob/3bfafd1f08b18ebb10cebc3ae59402f50df93d06/src/base/utils/random-number-generator.h#L121
-def xorshift64(state0, state1):
+def xorshift64(state0, state1) -> tuple[int, int]:
     MASK = 0xFFFFFFFFFFFFFFFF
 
     s1 = state0
@@ -52,17 +52,15 @@ def xorshift64(state0, state1):
     return state0, state1
 
 
-def to_double(state0: int):
+# Python rewrite of https://github.com/v8/v8/blob/3bfafd1f08b18ebb10cebc3ae59402f50df93d06/src/base/utils/random-number-generator.h#L111
+def to_double(state0: int) -> float:
     u_long_long_64 = (state0 >> 12) | 0x3FF0000000000000
     float_64 = struct.pack("<Q", u_long_long_64)
     next_sequence = struct.unpack("d", float_64)[0]
     return next_sequence - 1  # Maps [1,2) to [0,1)
 
 
-#        [.....................]
-# [.....................] [.....................] [.....................]
-#            ^             !
-
+# generator, that returns next random numbers
 def solve(sequence):
     sequence = sequence[:64]
     state0, state1 = getStates(sequence[0:5])
@@ -83,9 +81,6 @@ def solve(sequence):
     while to_double(state1) in sequence:
         state0, state1 = xorshift64(state0, state1)
 
-    print(sequence.index(to_double(state0)),
-          to_double(state1), to_double(state0))
-
     # calculate amount needed to get to the start of the buffer
     # addding 5 is because of getting first 5 elements to calculate state
     num = 64 - sequence.index(to_double(state0)) + 5
@@ -94,25 +89,27 @@ def solve(sequence):
     # finally get to the start of the buffer
     for _ in range(num):
         state0, state1 = xorshift64(state0, state1)
-        print(to_double(state0))
 
+    def refillCache():
+        nonlocal state0
+        nonlocal state1
+        nonlocal cache
+
+        cache = []
+        for _ in range(64):
+            state0, state1 = xorshift64(state0, state1)
+            cache.append(to_double(state0))
+
+    # prefill cache 
     cache = []
     cacheIndex = 64 - num + 5 - 1
-    # prefill cache
-    for _ in range(64):
-        state0, state1 = xorshift64(state0, state1)
-        cache.append(to_double(state0))
+    refillCache()
 
     while True:
         if cacheIndex < 0:
-            print("Cache refil!")
-            # refill cache
-            cache = []
-            for _ in range(64):
-                state0, state1 = xorshift64(state0, state1)
-                cache.append(to_double(state0))
-
+            refillCache()
             cacheIndex = 63
+        # walk through cache in reverse order
         yield cache[cacheIndex]
         cacheIndex -= 1
 
