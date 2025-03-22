@@ -62,29 +62,37 @@ def to_double(state0: int) -> float:
 
 # generator, that returns next random numbers
 def solve(sequence):
-    sequence = sequence[:64]
     state0, state1 = getStates(sequence[0:5])
 
     # save current states for later
     states = (state0, state1)
 
     index = 0
-
+    num = None
     # run until array wraps
     while (to_double(state0) not in sequence) or index <= 5:
         index += 1
         state0, state1 = xorshift64(state0, state1)
         if index > len(sequence) + 64:
-            raise RuntimeError("Sequence len to short. No results found")
+            # if sequence is to short raise error
+            if len(sequence) != 64:
+                raise RuntimeError("Sequence len to short. No results found")
+            # if sequence len is equal to cache size pass
+            state0, state1 = states
+            num = 5
+            break
 
-    # find index where buffer edge is
-    while to_double(state1) in sequence:
-        state0, state1 = xorshift64(state0, state1)
 
-    # calculate amount needed to get to the start of the buffer
-    # addding 5 is because of getting first 5 elements to calculate state
-    num = 64 - sequence.index(to_double(state0)) + 5
-    state0, state1 = states
+    if num is None:
+        # find index where buffer edge is
+        while to_double(state1) in sequence:
+            state0, state1 = xorshift64(state0, state1)
+
+        # calculate amount needed to get to the start of the buffer
+        # addding 5 is because of getting first 5 elements to calculate state
+        num = 64 - sequence.index(to_double(state0)) + 5
+        # reset states
+        state0, state1 = states
 
     # finally get to the start of the buffer
     for _ in range(num):
@@ -100,7 +108,7 @@ def solve(sequence):
             state0, state1 = xorshift64(state0, state1)
             cache.append(to_double(state0))
 
-    # prefill cache 
+    # prefill cache
     cache = []
     cacheIndex = 64 - num + 5 - 1 - len(sequence) + 64
     refillCache()

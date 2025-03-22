@@ -14,10 +14,11 @@ def runTest(numbers, start, end):
             print("Generator failed!")
             print("Window len:", end-start,
                   "Start Index:", start, "End Index", end)
-            print("Fail index:",index)
+            print("Fail index:", index)
             print("Expected:", number, "Got:", generated)
             if generated in remaining:
                 print("Wrong number index:", remaining.index(generated))
+
             print()
             print(numbers)
             return
@@ -28,14 +29,15 @@ if __name__ == "__main__":
         ["node", "test.js"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        text=True  # Ensures output is in string format (Python 3.7+)
+        text=True
     )
     stdout, stderr = process.communicate()
     stdout = stdout[:-1]
     numbers = list(map(float, stdout.split("\n")))
+
+    # example tests
     runTest(numbers, 12, 12+63)
-    runTest(numbers, 12, 12+62)
+    runTest(numbers, 12, 65)
     runTest(numbers, 1, 65)
-    runTest(numbers, 1, 64)
-
-
+    runTest(numbers, 0, 64)
+    runTest(numbers, 17, 100)
