@@ -82,9 +82,6 @@ def solve(sequence):
             num = 5
             break
 
-        # [..............][..............][..............][..............]
-        #         [..............................]
-        #      54    10  !               ^
     if num is None:
         # find index where buffer edge is
         while to_double(state1) in sequence:
@@ -92,22 +89,17 @@ def solve(sequence):
 
         # calculate amount needed to get to the start of the buffer
         # addding 5 is because of getting first 5 elements to calculate state
-        # padding = max(len(sequence) - (sequence.index(to_double(state0)) % 64) - index, 0) // 64 * 64
         padding = max(len(sequence) - index, 0) // 64 * 64
-        num = (64 - sequence.index(to_double(state0)) + 5)
-        print(sequence.index(to_double(state0)))
-        num += padding
+        num = 64 - sequence.index(to_double(state0)) + 5 + padding
         # reset states
         state0, state1 = states
 
-    cycles, diff = divmod(orgLen + num - 5, 64)
-    cycles -= 1
-    diff -= num - 5
     if orgLen <= 64:
         cycles, diff = 0, 0
-    print("a", cycles, diff, orgLen, num - 5)
+    else:
+        cycles, diff = divmod(orgLen + num - 5 - 64, 64)
+        diff -= num - 5
 
-    cacheIndex = (5 - 1 - len(sequence) - num - diff)
 
     # finally get to the start of the buffer
     for _ in range(num + cycles * 64):
@@ -124,9 +116,9 @@ def solve(sequence):
             cache.append(to_double(state0))
 
     # prefill cache
-    cacheIndex %= 64
     cache = []
     # calculate cache index, make sure it is in range
+    cacheIndex = (5 - 1 - len(sequence) - num - diff) % 64
     refillCache()
 
     while True:
