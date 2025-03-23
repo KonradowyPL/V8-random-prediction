@@ -16,13 +16,11 @@ Every time you call `Math.random()`, V8 retrieves a number from an internal buff
 - **If you don't provide enough random numbers to make an accurate prediction, the code will crash. This ensures that you never get incorrect predictions.**  
 
 ## Usage  
-
 1. **Clone the repository:**  
    ```sh
    git clone https://github.com/KonradowyPL/V8-random-prediction
    cd https://github.com/KonradowyPL/V8-random-prediction
    ```  
-
 2. **Create a Python script and import the module:**  
    ```py
    import V8random
@@ -37,7 +35,25 @@ Every time you call `Math.random()`, V8 retrieves a number from an internal buff
    generator = V8random.solve(sequence)
    print("Here are the next few Math.random() results:", next(generator), next(generator), next(generator))
    ```  
-
 3. **Paste the JavaScript code into the Chrome developer console or a Node.js environment.**  
 4. **Copy the printed results and paste them inside the `sequence` list in the Python script.**  
 5. **Run the Python script to predict upcoming `Math.random()` values.**  
+
+## Resources
+- [PwnFunction's Repository](https://github.com/PwnFunction/v8-randomness-predictor)
+- [There’s Math.random(), and then there’s Math.random()](https://v8.dev/blog/math-random)
+- [Further scramblings of Marsaglia’s xorshift generators](https://vigna.di.unimi.it/ftp/papers/xorshiftplus.pdf)
+- [V8 internal implementation](https://chromium.googlesource.com/v8/v8.git/+/refs/heads/main/src/base/utils/)
+- [(V8 Deep Dives) Random Thoughts on Math.random()](https://apechkurov.medium.com/v8-deep-dives-random-thoughts-on-math-random-fb155075e9e5)
+- [Hacking the JavaScript Lottery](https://blog.securityevaluators.com/hacking-the-javascript-lottery-80cc437e3b7f)
+- [Python Math.Random() cracker by StroppaFR](https://github.com/StroppaFR/mathrandomcrack)
+
+# Known issues:
+- If you are at the edge of a buffer, it will crash.
+- In some cases program requires full 64 values to find solutions when in reality less values would stil be enough
+
+## Contributing
+Feel free to open issues and make PRs.
+
+## License
+This repository is under MIT license. See [license](./LICENSE) file.
