@@ -95,8 +95,9 @@ def solve(sequence):
         # addding 5 is because of getting first 5 elements to calculate state
         # padding = max(len(sequence) - (sequence.index(to_double(state0)) % 64) - index, 0) // 64 * 64
         padding = max(len(sequence) - index, 0) // 64 * 64
-        num = 64 - sequence.index(to_double(state0)) + 5 + padding
-        print(num, sequence.index(to_double(state0)), len(sequence), index, 64 - index)
+        num = (64 - sequence.index(to_double(state0)) + 5)
+        print(padding, num, num + padding, 64-index)
+        num += padding
         # reset states
         state0, state1 = states
 
@@ -118,6 +119,7 @@ def solve(sequence):
     cache = []
     # calculate cache index, make sure it is in range
     cacheIndex = (5 - 1 - len(sequence) - num) % 64
+    print(cacheIndex)
     refillCache()
 
     while True:
