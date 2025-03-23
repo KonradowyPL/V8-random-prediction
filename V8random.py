@@ -83,15 +83,20 @@ def solve(sequence):
             num = 5
             break
 
+        # [..............][..............][..............][..............]
+        #         [..............................]
+        #      54    10  !               ^
     if num is None:
         # find index where buffer edge is
         while to_double(state1) in sequence:
             state0, state1 = xorshift64(state0, state1)
 
         # calculate amount needed to get to the start of the buffer
-        padding = 64 * max((len(sequence) + 1) // 64 - 1, 0)
         # addding 5 is because of getting first 5 elements to calculate state
+        # padding = max(len(sequence) - (sequence.index(to_double(state0)) % 64) - index, 0) // 64 * 64
+        padding = max(len(sequence) - index, 0) // 64 * 64
         num = 64 - sequence.index(to_double(state0)) + 5 + padding
+        print(num, sequence.index(to_double(state0)), len(sequence), index, 64 - index)
         # reset states
         state0, state1 = states
 
