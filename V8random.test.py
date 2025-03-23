@@ -37,20 +37,19 @@ if __name__ == "__main__":
     numbers = list(map(float, stdout.split("\n")))
 
     # example tests
-    runTest(numbers, 12, 12+63)
-    runTest(numbers, 12, 65)
-    runTest(numbers, 1, 65)
-    runTest(numbers, 0, 64)
-    runTest(numbers, 17, 100)
-    runTest(numbers, 0, 129)
-    runTest(numbers, 4, 128)
-    runTest(numbers, 50, 50+65)
-    runTest(numbers, 1, 255)
+    # runTest(numbers, 12, 12+63)
+    # runTest(numbers, 12, 65)
+    # runTest(numbers, 1, 65)
+    # runTest(numbers, 0, 64)
+    # runTest(numbers, 17, 100)
+    # runTest(numbers, 0, 129)
+    # runTest(numbers, 4, 128)
+    # runTest(numbers, 50, 50+65)
+    # runTest(numbers, 1, 255)
 
     # brute force all possible combinations
     for start in range(0, 60):
-        # for length in range(start//64 + 64, 196):
-            length = 64
+        for length in range(start//64 + 64, 196):
             print("Running:", start, length)
             runTest(numbers, start, start + length)
 

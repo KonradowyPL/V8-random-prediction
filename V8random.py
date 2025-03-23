@@ -59,7 +59,8 @@ def to_double(state0: int) -> float:
 
 # generator, that returns next random numbers
 def solve(sequence):
-    if len(sequence) != 64: print("Warning: sequence len is not 64. Errors might occur")
+    orgLen = len(sequence)
+    sequence = sequence[:64]
     # use z3 to calculate internal states
     state0, state1 = getStates(sequence[0:5])
 
@@ -94,12 +95,22 @@ def solve(sequence):
         # padding = max(len(sequence) - (sequence.index(to_double(state0)) % 64) - index, 0) // 64 * 64
         padding = max(len(sequence) - index, 0) // 64 * 64
         num = (64 - sequence.index(to_double(state0)) + 5)
+        print(sequence.index(to_double(state0)))
         num += padding
         # reset states
         state0, state1 = states
 
+    cycles, diff = divmod(orgLen + num - 5, 64)
+    cycles -= 1
+    diff -= num - 5
+    if orgLen <= 64:
+        cycles, diff = 0, 0
+    print("a", cycles, diff, orgLen, num - 5)
+
+    cacheIndex = (5 - 1 - len(sequence) - num - diff)
+
     # finally get to the start of the buffer
-    for _ in range(num):
+    for _ in range(num + cycles * 64):
         state0, state1 = xorshift64(state0, state1)
 
     def refillCache():
@@ -113,9 +124,9 @@ def solve(sequence):
             cache.append(to_double(state0))
 
     # prefill cache
+    cacheIndex %= 64
     cache = []
     # calculate cache index, make sure it is in range
-    cacheIndex = (5 - 1 - len(sequence) - num) % 64
     refillCache()
 
     while True:
