@@ -89,7 +89,7 @@ def solve(sequence):
             state0, state1 = xorshift64(state0, state1)
 
         # calculate amount needed to get to the start of the buffer
-        padding = 64 * max(len(sequence) // 64 - 1, 0)
+        padding = 64 * max((len(sequence) + 1) // 64 - 1, 0)
         # addding 5 is because of getting first 5 elements to calculate state
         num = 64 - sequence.index(to_double(state0)) + 5 + padding
         # reset states

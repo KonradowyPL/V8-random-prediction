@@ -16,12 +16,13 @@ def runTest(numbers, start, end):
                   "Start Index:", start, "End Index", end)
             print("Fail index:", index)
             print("Expected:", number, "Got:", generated)
-            if generated in remaining:
-                print("Wrong number index:", remaining.index(generated))
+            if generated in sequence:
+                print("Relative wrong number index:",
+                      sequence.index(generated) - end)
 
             print()
             print(numbers)
-            raise RuntimeError("Test failed!") 
+            raise RuntimeError("Test failed!")
 
 
 if __name__ == "__main__":
@@ -42,5 +43,6 @@ if __name__ == "__main__":
     runTest(numbers, 0, 64)
     runTest(numbers, 17, 100)
     runTest(numbers, 0, 129)
+    runTest(numbers, 1, 128)
 
     print("All tests passed!")
