@@ -21,7 +21,7 @@ def runTest(numbers, start, end):
 
             print()
             print(numbers)
-            return
+            raise RuntimeError("Test failed!") 
 
 
 if __name__ == "__main__":
@@ -41,3 +41,6 @@ if __name__ == "__main__":
     runTest(numbers, 1, 65)
     runTest(numbers, 0, 64)
     runTest(numbers, 17, 100)
+    runTest(numbers, 0, 129)
+
+    print("All tests passed!")

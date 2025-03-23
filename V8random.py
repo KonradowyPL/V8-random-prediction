@@ -5,8 +5,8 @@ sequence = [0.15923871415005353, 0.04336549949372803, 0.3862752026091234, 0.4485
             0.8370330873961513, 0.7985800626273878, 0.8908451786957272, 0.6621872791526808, 0.6192890196160312, 0.07494320168145863, 0.9442681652090794, 0.3859832884541614, 0.6665405304346177, 0.5230977896216298, 0.22312153425755277, 0.1250135437430797, 0.9980529428557101, 0.7362621296111185, 0.18127601480945543, 0.5067832561607248, 0.6454331925776637, 0.7701774694394004, 0.7243234931888078, 0.0914305947387295, 0.5315761743687102, 0.4700802448896637, 0.18306027288642213, 0.5492917122690992, 0.05353387443639912, 0.2106803305312117, 0.07635881558073443, 0.8894654241584554, 0.39447316524739473, 0.7485857750690736, 0.6574026882090545, 0.11957860433247491]
 
 
-# I have no idea how it works
 # Function copppied from https://github.com/PwnFunction/v8-randomness-predictor/blob/main/main.py
+# I have no idea how it works
 def getStates(sequence) -> tuple[int, int]:
     sequence = sequence[::-1]
     solver = z3.Solver()
@@ -62,6 +62,7 @@ def to_double(state0: int) -> float:
 
 # generator, that returns next random numbers
 def solve(sequence):
+    # use z3 to calculate internal states
     state0, state1 = getStates(sequence[0:5])
 
     # save current states for later
@@ -82,15 +83,15 @@ def solve(sequence):
             num = 5
             break
 
-
     if num is None:
         # find index where buffer edge is
         while to_double(state1) in sequence:
             state0, state1 = xorshift64(state0, state1)
 
         # calculate amount needed to get to the start of the buffer
+        padding = 64 * max(len(sequence) // 64 - 1, 0)
         # addding 5 is because of getting first 5 elements to calculate state
-        num = 64 - sequence.index(to_double(state0)) + 5
+        num = 64 - sequence.index(to_double(state0)) + 5 + padding
         # reset states
         state0, state1 = states
 
@@ -110,7 +111,8 @@ def solve(sequence):
 
     # prefill cache
     cache = []
-    cacheIndex = 64 - num + 5 - 1 - len(sequence) + 64
+    # calculate cache index, make sure it is in range
+    cacheIndex = (5 - 1 - len(sequence) - num) % 64
     refillCache()
 
     while True:
