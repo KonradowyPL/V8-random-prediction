@@ -1,9 +1,6 @@
 import struct
 import z3
 
-sequence = [0.15923871415005353, 0.04336549949372803, 0.3862752026091234, 0.44851280523543857, 0.08167302834747203, 0.03036753926269764, 0.1353841058556584, 0.13271951889208866, 0.6869980900346104, 0.3706273812710761, 0.608949472593058, 0.3728168729976238, 0.43903812251004704, 0.3983344188546407, 0.8591043718401656, 0.8897908171028812, 0.42324344278067105, 0.06889982437831299, 0.39584339814431746, 0.0910125243139508, 0.5678330526077262, 0.8936543924934519, 0.6072590271621732, 0.7312777957538501, 0.6880408005731018, 0.2941481174697993, 0.6092282983447941, 0.12420830850781517, 0.9116987499276916, 0.7722462653630251, 0.634633965156709, 0.0007998235285560096,
-            0.8370330873961513, 0.7985800626273878, 0.8908451786957272, 0.6621872791526808, 0.6192890196160312, 0.07494320168145863, 0.9442681652090794, 0.3859832884541614, 0.6665405304346177, 0.5230977896216298, 0.22312153425755277, 0.1250135437430797, 0.9980529428557101, 0.7362621296111185, 0.18127601480945543, 0.5067832561607248, 0.6454331925776637, 0.7701774694394004, 0.7243234931888078, 0.0914305947387295, 0.5315761743687102, 0.4700802448896637, 0.18306027288642213, 0.5492917122690992, 0.05353387443639912, 0.2106803305312117, 0.07635881558073443, 0.8894654241584554, 0.39447316524739473, 0.7485857750690736, 0.6574026882090545, 0.11957860433247491]
-
 
 # Function copppied from https://github.com/PwnFunction/v8-randomness-predictor/blob/main/main.py
 # I have no idea how it works
@@ -62,6 +59,7 @@ def to_double(state0: int) -> float:
 
 # generator, that returns next random numbers
 def solve(sequence):
+    if len(sequence) != 64: print("Warning: sequence len is not 64. Errors might occur")
     # use z3 to calculate internal states
     state0, state1 = getStates(sequence[0:5])
 
@@ -96,7 +94,6 @@ def solve(sequence):
         # padding = max(len(sequence) - (sequence.index(to_double(state0)) % 64) - index, 0) // 64 * 64
         padding = max(len(sequence) - index, 0) // 64 * 64
         num = (64 - sequence.index(to_double(state0)) + 5)
-        print(padding, num, num + padding, 64-index)
         num += padding
         # reset states
         state0, state1 = states
@@ -119,7 +116,6 @@ def solve(sequence):
     cache = []
     # calculate cache index, make sure it is in range
     cacheIndex = (5 - 1 - len(sequence) - num) % 64
-    print(cacheIndex)
     refillCache()
 
     while True:
@@ -129,9 +125,3 @@ def solve(sequence):
         # walk through cache in reverse order
         yield cache[cacheIndex]
         cacheIndex -= 1
-
-
-if __name__ == "__main__":
-    generator = solve(sequence)
-    for i in range(128):
-        print(i+1, next(generator))

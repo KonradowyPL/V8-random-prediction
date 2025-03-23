@@ -49,7 +49,8 @@ if __name__ == "__main__":
 
     # brute force all possible combinations
     for start in range(0, 60):
-        for length in range(start//64 + 64, 196):
+        # for length in range(start//64 + 64, 196):
+            length = 64
             print("Running:", start, length)
             runTest(numbers, start, start + length)
 
